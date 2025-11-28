@@ -5,6 +5,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using FDMS.GroundTerminal.Models;
 using FDMS.GroundTerminal.Services;
+using FDMS.GroundTerminal.Data;
+
 
 namespace FDMS.GroundTerminal
 {
@@ -22,6 +24,7 @@ namespace FDMS.GroundTerminal
 
         // Services
         private readonly ITelemetryService _telemetryService;
+        private readonly IDatabaseService _databaseService;
         private bool _isRealTimeEnabled;
 
         // Common
@@ -70,7 +73,8 @@ namespace FDMS.GroundTerminal
 
         public MainForm()
         {
-            // Everything is built in code; no InitializeComponent
+            string connectionString = Data.DataBaseConfiguration.GetConnectionString();
+            _databaseService = new SqlServerDatabaseService(connectionString);
             _telemetryService = new DummyTelemetryService();
 
             BuildLayout();
@@ -836,6 +840,24 @@ namespace FDMS.GroundTerminal
                 _telemetryService.SearchInvalidPackets(tailNumber, from, to);
 
             dgvInvalidResults.DataSource = packets;
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // MainForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "MainForm";
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

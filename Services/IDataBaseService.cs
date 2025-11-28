@@ -7,7 +7,7 @@ using FDMS.GroundTerminal.Models;
 
 namespace FDMS.GroundTerminal.Services
 {
-    public interface IDataBaseService
+    public interface IDatabaseService
     {
         DatabaseStatus TestConnection();
 
