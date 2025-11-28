@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ File          : MainForm.cs
+ Project       : SENG3020 - Term Project
+ Programmer    : Valentyn Novosydliuk
+ File Version  : 11/28/2025
+ Description   : Defines the main Windows Form for the FDMS Ground Terminal including
+                 dashboard, history, invalid packet and settings views.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -6,7 +15,6 @@ using System.Windows.Forms;
 using FDMS.GroundTerminal.Models;
 using FDMS.GroundTerminal.Services;
 using FDMS.GroundTerminal.Data;
-
 
 namespace FDMS.GroundTerminal
 {
@@ -70,6 +78,13 @@ namespace FDMS.GroundTerminal
         private Label lblServerName;
         private Label lblDatabaseName;
 
+        /*
+         Function     : MainForm
+         Description  : Constructor that initializes the database service and builds the
+                        main layout for the FDMS Ground Terminal user interface.
+         Parameters   : none
+         Return Values: void
+        */
         public MainForm()
         {
             string connectionString = Data.DataBaseConfiguration.GetConnectionString();
@@ -79,9 +94,15 @@ namespace FDMS.GroundTerminal
             InitializeGui();
         }
 
-
         // ======================= LAYOUT =======================
 
+        /*
+         Function     : BuildLayout
+         Description  : Configures the main form properties and creates the tab control
+                        with dashboard, history, invalid packets and settings tabs.
+         Parameters   : none
+         Return Values: void
+        */
         private void BuildLayout()
         {
             // Form properties
@@ -120,6 +141,13 @@ namespace FDMS.GroundTerminal
             BuildSettingsTab();
         }
 
+        /*
+         Function     : BuildDashboardTab
+         Description  : Builds the dashboard tab including live telemetry controls,
+                        current value labels and the event log grid.
+         Parameters   : none
+         Return Values: void
+        */
         private void BuildDashboardTab()
         {
             // Outer panel with padding (background)
@@ -316,7 +344,13 @@ namespace FDMS.GroundTerminal
             timerRealTime.Tick += timerRealTime_Tick;
         }
 
-
+        /*
+         Function     : BuildHistoryTab
+         Description  : Builds the history tab and configures controls used to search
+                        and display historical telemetry records.
+         Parameters   : none
+         Return Values: void
+        */
         private void BuildHistoryTab()
         {
             var outer = new Panel
@@ -457,7 +491,13 @@ namespace FDMS.GroundTerminal
             card.Controls.Add(topPanel);           // top
         }
 
-
+        /*
+         Function     : BuildInvalidTab
+         Description  : Builds the invalid packets tab including filter controls and
+                        the grid that lists invalid packet records.
+         Parameters   : none
+         Return Values: void
+        */
         private void BuildInvalidTab()
         {
             var outer = new Panel
@@ -587,6 +627,13 @@ namespace FDMS.GroundTerminal
             card.Controls.Add(topPanel);
         }
 
+        /*
+         Function     : BuildSettingsTab
+         Description  : Builds the settings tab and displays database connection status,
+                        server name and database name.
+         Parameters   : none
+         Return Values: void
+        */
         private void BuildSettingsTab()
         {
             var outer = new Panel
@@ -667,6 +714,15 @@ namespace FDMS.GroundTerminal
 
         // ======================= HELPERS =======================
 
+        /*
+         Function     : MakeLabel
+         Description  : Creates a standard label used for field captions with
+                        consistent font and color settings.
+         Parameters   : text  - caption text
+                        x     - horizontal position
+                        y     - vertical position
+         Return Values: Label
+        */
         private Label MakeLabel(string text, int x, int y)
         {
             return new Label
@@ -679,6 +735,14 @@ namespace FDMS.GroundTerminal
             };
         }
 
+        /*
+         Function     : MakeValueLabel
+         Description  : Creates a label used to display telemetry values and applies
+                        a lighter foreground color.
+         Parameters   : x  - horizontal position
+                        y  - vertical position
+         Return Values: Label
+        */
         private Label MakeValueLabel(int x, int y)
         {
             return new Label
@@ -691,6 +755,14 @@ namespace FDMS.GroundTerminal
             };
         }
 
+        /*
+         Function     : StyleButton
+         Description  : Applies common visual styling to buttons so that primary and
+                        secondary actions are clearly distinguished.
+         Parameters   : b          - button to style
+                        isPrimary  - true for primary style false for secondary style
+         Return Values: void
+        */
         private void StyleButton(Button b, bool isPrimary = true)
         {
             b.FlatStyle = FlatStyle.Flat;
@@ -702,6 +774,13 @@ namespace FDMS.GroundTerminal
             b.Width = 130;
         }
 
+        /*
+         Function     : StyleGrid
+         Description  : Applies a consistent visual style to data grids including
+                        colors for headers rows and selection.
+         Parameters   : g  - data grid to style
+         Return Values: void
+        */
         private void StyleGrid(DataGridView g)
         {
             g.BackgroundColor = CardBackground;
@@ -723,11 +802,17 @@ namespace FDMS.GroundTerminal
 
         // ======================= LOGIC =======================
 
+        /*
+         Function     : InitializeGui
+         Description  : Initializes control values for all tabs including tail lists,
+                        date ranges data bindings and grid styling and updates status.
+         Parameters   : none
+         Return Values: void
+        */
         private void InitializeGui()
         {
             IList<string> tails = _databaseService.GetTailNumbers();
             cboDashboardTail.DataSource = tails;
-
 
             DateTime today = DateTime.Today;
             dtpHistoryFrom.Value = today.AddHours(-1);
@@ -751,9 +836,15 @@ namespace FDMS.GroundTerminal
             UpdateRealTimeLabel();
 
             //TestDatabaseConnection();
-        
         }
 
+        /*
+         Function     : TestDatabaseConnection
+         Description  : Tests the database connection and shows a message box with
+                        server database and status details.
+         Parameters   : none
+         Return Values: void
+        */
         private void TestDatabaseConnection()
         {
             var status = _databaseService.TestConnection();
@@ -769,6 +860,14 @@ namespace FDMS.GroundTerminal
                 status.IsConnected ? MessageBoxIcon.Information : MessageBoxIcon.Error
             );
         }
+
+        /*
+         Function     : UpdateDatabaseStatus
+         Description  : Retrieves the current database connection status from the
+                        service and updates the settings tab labels.
+         Parameters   : none
+         Return Values: void
+        */
         private void UpdateDatabaseStatus()
         {
             var status = _databaseService.TestConnection();
@@ -780,13 +879,27 @@ namespace FDMS.GroundTerminal
             lblDatabaseName.Text = "Database: " + status.DatabaseName;
         }
 
-
+        /*
+         Function     : UpdateRealTimeLabel
+         Description  : Updates the dashboard real time label text and color based on
+                        the internal real time flag.
+         Parameters   : none
+         Return Values: void
+        */
         private void UpdateRealTimeLabel()
         {
             lblDashboardRealTime.Text = _isRealTimeEnabled ? "Real-Time: ON" : "Real-Time: OFF";
             lblDashboardRealTime.ForeColor = _isRealTimeEnabled ? Color.DarkGreen : Color.DarkRed;
         }
 
+        /*
+         Function     : btnStartRealTime_Click
+         Description  : Event handler for the Start Real Time button which enables
+                        real time mode and starts the timer.
+         Parameters   : sender  - event source
+                        e       - event data
+         Return Values: void
+        */
         private void btnStartRealTime_Click(object sender, EventArgs e)
         {
             _isRealTimeEnabled = true;
@@ -794,6 +907,14 @@ namespace FDMS.GroundTerminal
             timerRealTime.Start();
         }
 
+        /*
+         Function     : btnStopRealTime_Click
+         Description  : Event handler for the Stop Real Time button which disables
+                        real time mode and stops the timer.
+         Parameters   : sender  - event source
+                        e       - event data
+         Return Values: void
+        */
         private void btnStopRealTime_Click(object sender, EventArgs e)
         {
             _isRealTimeEnabled = false;
@@ -801,6 +922,14 @@ namespace FDMS.GroundTerminal
             timerRealTime.Stop();
         }
 
+        /*
+         Function     : timerRealTime_Tick
+         Description  : Timer tick handler that retrieves the latest telemetry record
+                        for the selected tail and updates the dashboard values and log.
+         Parameters   : sender  - event source
+                        e       - event data
+         Return Values: void
+        */
         private void timerRealTime_Tick(object sender, EventArgs e)
         {
             if (!_isRealTimeEnabled) return;
@@ -823,6 +952,14 @@ namespace FDMS.GroundTerminal
             _dashboardLog.Add(record);
         }
 
+        /*
+         Function     : btnHistorySearch_Click
+         Description  : Event handler for the history search button which validates
+                        input and loads telemetry records for the given range.
+         Parameters   : sender  - event source
+                        e       - event data
+         Return Values: void
+        */
         private void btnHistorySearch_Click(object sender, EventArgs e)
         {
             string tailNumber = txtHistoryTail.Text.Trim();
@@ -841,6 +978,15 @@ namespace FDMS.GroundTerminal
 
             dgvHistoryResults.DataSource = records;
         }
+
+        /*
+         Function     : btnInvalidSearch_Click
+         Description  : Event handler for the invalid packet filter button which
+                        validates input and loads matching invalid packets.
+         Parameters   : sender  - event source
+                        e       - event data
+         Return Values: void
+        */
         private void btnInvalidSearch_Click(object sender, EventArgs e)
         {
             string tailNumber = txtInvalidTail.Text.Trim();
@@ -857,10 +1003,16 @@ namespace FDMS.GroundTerminal
             IList<InvalidPacket> packets =
                  _databaseService.SearchInvalidPackets(tailNumber, from, to);
 
-
             dgvInvalidResults.DataSource = packets;
         }
 
+        /*
+         Function     : InitializeComponent
+         Description  : Minimal designer initialization used by the Windows Forms
+                        designer when the form is first created.
+         Parameters   : none
+         Return Values: void
+        */
         private void InitializeComponent()
         {
             this.SuspendLayout();
@@ -874,6 +1026,14 @@ namespace FDMS.GroundTerminal
 
         }
 
+        /*
+         Function     : MainForm_Load
+         Description  : Event handler for the form load event. Currently no logic is
+                        required on load.
+         Parameters   : sender  - event source
+                        e       - event data
+         Return Values: void
+        */
         private void MainForm_Load(object sender, EventArgs e)
         {
 

@@ -1,14 +1,35 @@
-﻿using System;
+﻿/*
+File         : DummyTelemetryService.cs
+Project      : SENG3020 - Term Project
+Programmer   : Valentyn Novosydliuk
+File Version : 11/28/2025
+Description  : Provides a dummy implementation of ITelemetryService that generates
+               simulated telemetry records invalid packets and database status data.
+*/
+
+using System;
 using System.Collections.Generic;
 using FDMS.GroundTerminal.Models;
 
 namespace FDMS.GroundTerminal.Services
 {
+    /*
+     Class        : DummyTelemetryService
+     Description  : Generates mock telemetry values and invalid packet data for UI
+                    testing without requiring a live database connection.
+    */
     public class DummyTelemetryService : ITelemetryService
     {
         private readonly Random _random = new Random();
         private readonly List<string> _tailNumbers;
 
+        /*
+         Function     : DummyTelemetryService
+         Description  : Initializes the dummy service with predefined tail numbers for
+                        use in telemetry simulation.
+         Parameters   : none
+         Return Values: void
+        */
         public DummyTelemetryService()
         {
             _tailNumbers = new List<string>
@@ -19,14 +40,26 @@ namespace FDMS.GroundTerminal.Services
             };
         }
 
+        /*
+         Function     : GetTailNumbers
+         Description  : Returns the list of available dummy tail numbers.
+         Parameters   : none
+         Return Values: IList<string>
+        */
         public IList<string> GetTailNumbers()
         {
             return _tailNumbers;
         }
 
+        /*
+         Function     : GetLatestTelemetry
+         Description  : Generates a simulated telemetry record for live mode including
+                        accelerometer altitude weight and attitude values.
+         Parameters   : tailNumber - aircraft tail identifier
+         Return Values: TelemetryRecord
+        */
         public TelemetryRecord GetLatestTelemetry(string tailNumber)
         {
-            // Simulate some changing data
             return new TelemetryRecord
             {
                 Timestamp = DateTime.Now,
@@ -43,6 +76,15 @@ namespace FDMS.GroundTerminal.Services
             };
         }
 
+        /*
+         Function     : SearchTelemetry
+         Description  : Generates a list of simulated telemetry records for the given
+                        time range in one minute increments.
+         Parameters   : tailNumber - aircraft identifier
+                        from       - starting timestamp
+                        to         - ending timestamp
+         Return Values: IList<TelemetryRecord>
+        */
         public IList<TelemetryRecord> SearchTelemetry(
             string tailNumber,
             DateTime from,
@@ -74,6 +116,15 @@ namespace FDMS.GroundTerminal.Services
             return list;
         }
 
+        /*
+         Function     : SearchInvalidPackets
+         Description  : Returns a small set of simulated invalid packet records using
+                        random sequence numbers and consistent error reasons.
+         Parameters   : tailNumber - aircraft identifier
+                        from       - starting timestamp
+                        to         - ending timestamp
+         Return Values: IList<InvalidPacket>
+        */
         public IList<InvalidPacket> SearchInvalidPackets(
             string tailNumber,
             DateTime from,
@@ -96,6 +147,13 @@ namespace FDMS.GroundTerminal.Services
             return list;
         }
 
+        /*
+         Function     : GetDatabaseStatus
+         Description  : Returns a dummy database status object since this service does
+                        not actually connect to a real database.
+         Parameters   : none
+         Return Values: DatabaseStatus
+        */
         public DatabaseStatus GetDatabaseStatus()
         {
             return new DatabaseStatus
@@ -107,6 +165,13 @@ namespace FDMS.GroundTerminal.Services
             };
         }
 
+        /*
+         Function     : NextDouble
+         Description  : Generates a pseudo random double value within a fixed range.
+         Parameters   : minValue - lower bound
+                        maxValue - upper bound
+         Return Values: double
+        */
         private double NextDouble(double minValue, double maxValue)
         {
             return minValue + (_random.NextDouble() * (maxValue - minValue));
