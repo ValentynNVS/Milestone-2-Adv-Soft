@@ -750,7 +750,7 @@ namespace FDMS.GroundTerminal
             UpdateDatabaseStatus();
             UpdateRealTimeLabel();
 
-            TestDatabaseConnection();
+            //TestDatabaseConnection();
         
         }
 
@@ -841,7 +841,6 @@ namespace FDMS.GroundTerminal
 
             dgvHistoryResults.DataSource = records;
         }
-
         private void btnInvalidSearch_Click(object sender, EventArgs e)
         {
             string tailNumber = txtInvalidTail.Text.Trim();
