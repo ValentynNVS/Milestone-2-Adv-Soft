@@ -47,3 +47,4 @@ Values ('C-QWWT', 1, GETDATE(), 0.0, 0.0, 0.0, 15000.0000);
 
 INSERT INTO AttitudeParameters (Tail_number, Packet_sequence, Aircraft_timestamp, Altitude, Pitch, Bank, Weight)
 Values ('C-QWWT', 1, GETDATE(), 35000.0000, 2.5000, 0.0000, 15000.0000);
+GO
