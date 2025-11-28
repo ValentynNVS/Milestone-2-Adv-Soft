@@ -749,8 +749,26 @@ namespace FDMS.GroundTerminal
 
             UpdateDatabaseStatus();
             UpdateRealTimeLabel();
+
+            TestDatabaseConnection();
+        
         }
 
+        private void TestDatabaseConnection()
+        {
+            var status = _databaseService.TestConnection();
+
+            MessageBox.Show(
+                $"Database Connection Test:\n\n" +
+                $"Server: {status.ServerName}\n" +
+                $"Database: {status.DatabaseName}\n" +
+                $"Status: {(status.IsConnected ? "CONNECTED" : "FAILED")}\n" +
+                $"Message: {status.StatusMessage}",
+                "Database Test",
+                MessageBoxButtons.OK,
+                status.IsConnected ? MessageBoxIcon.Information : MessageBoxIcon.Error
+            );
+        }
         private void UpdateDatabaseStatus()
         {
             var status = _telemetryService.GetDatabaseStatus();
