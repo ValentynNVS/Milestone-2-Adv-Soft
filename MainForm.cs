@@ -23,7 +23,6 @@ namespace FDMS.GroundTerminal
         private readonly Color TextLight = Color.FromArgb(110, 130, 150); // lighter gray
 
         // Services
-        private readonly ITelemetryService _telemetryService;
         private readonly IDatabaseService _databaseService;
         private bool _isRealTimeEnabled;
 
@@ -74,12 +73,12 @@ namespace FDMS.GroundTerminal
         public MainForm()
         {
             string connectionString = Data.DataBaseConfiguration.GetConnectionString();
-            _databaseService = new SqlServerDatabaseService(connectionString);
-            _telemetryService = new DummyTelemetryService();
+            _databaseService = new SqlServerDatabaseService(connectionString); // REAL DB
 
             BuildLayout();
             InitializeGui();
         }
+
 
         // ======================= LAYOUT =======================
 
@@ -726,8 +725,9 @@ namespace FDMS.GroundTerminal
 
         private void InitializeGui()
         {
-            IList<string> tails = _telemetryService.GetTailNumbers();
+            IList<string> tails = _databaseService.GetTailNumbers();
             cboDashboardTail.DataSource = tails;
+
 
             DateTime today = DateTime.Today;
             dtpHistoryFrom.Value = today.AddHours(-1);
@@ -780,6 +780,7 @@ namespace FDMS.GroundTerminal
             lblDatabaseName.Text = "Database: " + status.DatabaseName;
         }
 
+
         private void UpdateRealTimeLabel()
         {
             lblDashboardRealTime.Text = _isRealTimeEnabled ? "Real-Time: ON" : "Real-Time: OFF";
@@ -807,7 +808,7 @@ namespace FDMS.GroundTerminal
             string tailNumber = cboDashboardTail.SelectedItem as string;
             if (string.IsNullOrWhiteSpace(tailNumber)) return;
 
-            TelemetryRecord record = _telemetryService.GetLatestTelemetry(tailNumber);
+            TelemetryRecord record = _databaseService.GetLatestTelemetry(tailNumber);
 
             lblAccelXValue.Text = record.AccelX.ToString("F3");
             lblAccelYValue.Text = record.AccelY.ToString("F3");
@@ -854,7 +855,8 @@ namespace FDMS.GroundTerminal
             DateTime to = dtpInvalidTo.Value;
 
             IList<InvalidPacket> packets =
-                _databaseService.SearchInvalidPackets(tailNumber, from, to);
+                 _databaseService.SearchInvalidPackets(tailNumber, from, to);
+
 
             dgvInvalidResults.DataSource = packets;
         }
