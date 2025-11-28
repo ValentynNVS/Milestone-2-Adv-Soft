@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+File         : IDataBaseService.cs
+Project      : SENG3020 - Term Project
+Programmer   : Ygnacio Maza Sanchez
+File Version : 11/28/2025
+Description  : Interface that defines database operations required by the FDMS Ground Terminal.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

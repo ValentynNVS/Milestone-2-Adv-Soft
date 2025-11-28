@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+File         : SqlServerDatabaseService.cs
+Project      : SENG3020 - Term Project - FDMS Ground Terminal
+Programmer   : Ygnacio Maza Sanchez
+File Version : 11/28/2025
+Description  : Implements IDatabaseService against a SQL Server database. Handles connection testing,
+               telemetry and invalid packet persistence and queries used by the FDMS Ground Terminal.
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +21,24 @@ namespace FDMS.GroundTerminal.Services
     {
         private readonly string _connectionString;
 
+        /*
+          Function: SqlServerDatabaseService()
+          Description: Initializes the SQL Server database service with the provided connection string.
+          Parameters: connectionString 
+          Return Values: N/A
+        */
         public SqlServerDatabaseService(string connectionString)
         {
             _connectionString = connectionString;
         }
 
+        /*
+          Function: TestConnection()
+          Description: Attempts to open a connection using the configured connection string and
+                       returns a DatabaseStatus describing the result.
+          Parameters: none
+          Return Values: DatabaseStatus - connection result and messages.
+        */
         public DatabaseStatus TestConnection()
         {
             var status = new DatabaseStatus
@@ -45,6 +66,12 @@ namespace FDMS.GroundTerminal.Services
             return status;
         }
 
+        /*
+          Function: StoreTelemetry()
+          Description: Persists telemetry into GForceParameters and AttitudeParameters tables.
+          Parameters: record.
+          Return Values: bool - true on success, false on failure.
+        */
         public bool StoreTelemetry(TelemetryRecord record)
         {
             try
@@ -93,6 +120,12 @@ namespace FDMS.GroundTerminal.Services
             }
         }
 
+        /*
+          Function: StoreInvalidPacket()
+          Description: Persists an invalid packet into the ErrorLog table.
+          Parameters: packet 
+          Return Values: bool.
+        */
         public bool StoreInvalidPacket(InvalidPacket packet)
         {
             try
@@ -120,6 +153,12 @@ namespace FDMS.GroundTerminal.Services
             }
         }
 
+        /*
+          Function: GetTailNumbers()
+          Description: Retrieves distinct tail numbers from the GForceParameters table ordered alphabetically.
+          Parameters: none
+          Return Values: IList<string>
+        */
         public IList<string> GetTailNumbers()
         {
             var tailNumbers = new List<string>();
@@ -150,6 +189,13 @@ namespace FDMS.GroundTerminal.Services
             return tailNumbers;
         }
 
+        /*
+          Function: SearchTelemetry()
+          Description: Searches telemetry combining GForceParameters and AttitudeParameters for a tail number
+                       within a timestamp range.
+          Parameters: tailNumber, from, to 
+          Return Values: IList<TelemetryRecord> 
+        */
         public IList<TelemetryRecord> SearchTelemetry(string tailNumber, DateTime from, DateTime to)
         {
             var records = new List<TelemetryRecord>();
@@ -205,6 +251,12 @@ namespace FDMS.GroundTerminal.Services
             return records;
         }
 
+        /*
+          Function: SearchInvalidPackets()
+          Description: Retrieves invalid packets from ErrorLog for a given tail number and time range.
+          Parameters: tailNumber,from, to 
+          Return Values: IList<InvalidPacket>
+        */
         public IList<InvalidPacket> SearchInvalidPackets(string tailNumber, DateTime from, DateTime to)
         {
             var packets = new List<InvalidPacket>();
@@ -250,6 +302,12 @@ namespace FDMS.GroundTerminal.Services
             return packets;
         }
 
+        /*
+          Function: GetLatestTelemetry()
+          Description: Retrieves the most recent telemetry record for the provided tail number.
+          Parameters: tailNumber 
+          Return Values: TelemetryRecord.
+        */
         public TelemetryRecord GetLatestTelemetry(string tailNumber)
         {
             try
