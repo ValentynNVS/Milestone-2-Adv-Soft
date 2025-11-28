@@ -23,7 +23,6 @@ namespace FDMS.GroundTerminal
         private readonly Color TextLight = Color.FromArgb(110, 130, 150); // lighter gray
 
         // Services
-        private readonly ITelemetryService _telemetryService;
         private readonly IDatabaseService _databaseService;
         private bool _isRealTimeEnabled;
 
@@ -74,12 +73,12 @@ namespace FDMS.GroundTerminal
         public MainForm()
         {
             string connectionString = Data.DataBaseConfiguration.GetConnectionString();
-            _databaseService = new SqlServerDatabaseService(connectionString);
-            _telemetryService = new DummyTelemetryService();
+            _databaseService = new SqlServerDatabaseService(connectionString); // REAL DB
 
             BuildLayout();
             InitializeGui();
         }
+
 
         // ======================= LAYOUT =======================
 
@@ -726,8 +725,9 @@ namespace FDMS.GroundTerminal
 
         private void InitializeGui()
         {
-            IList<string> tails = _telemetryService.GetTailNumbers();
+            IList<string> tails = _databaseService.GetTailNumbers();
             cboDashboardTail.DataSource = tails;
+
 
             DateTime today = DateTime.Today;
             dtpHistoryFrom.Value = today.AddHours(-1);
@@ -771,7 +771,7 @@ namespace FDMS.GroundTerminal
         }
         private void UpdateDatabaseStatus()
         {
-            var status = _telemetryService.GetDatabaseStatus();
+            var status = _databaseService.TestConnection();
 
             lblDbStatusValue.Text = status.IsConnected ? "Connected" : "Disconnected";
             lblDbStatusValue.ForeColor = status.IsConnected ? Color.DarkGreen : Color.DarkRed;
@@ -779,6 +779,7 @@ namespace FDMS.GroundTerminal
             lblServerName.Text = "Server: " + status.ServerName;
             lblDatabaseName.Text = "Database: " + status.DatabaseName;
         }
+
 
         private void UpdateRealTimeLabel()
         {
@@ -807,7 +808,7 @@ namespace FDMS.GroundTerminal
             string tailNumber = cboDashboardTail.SelectedItem as string;
             if (string.IsNullOrWhiteSpace(tailNumber)) return;
 
-            TelemetryRecord record = _telemetryService.GetLatestTelemetry(tailNumber);
+            TelemetryRecord record = _databaseService.GetLatestTelemetry(tailNumber);
 
             lblAccelXValue.Text = record.AccelX.ToString("F3");
             lblAccelYValue.Text = record.AccelY.ToString("F3");
@@ -836,7 +837,7 @@ namespace FDMS.GroundTerminal
             DateTime to = dtpHistoryTo.Value;
 
             IList<TelemetryRecord> records =
-                _telemetryService.SearchTelemetry(tailNumber, from, to);
+                _databaseService.SearchTelemetry(tailNumber, from, to);
 
             dgvHistoryResults.DataSource = records;
         }
@@ -855,7 +856,8 @@ namespace FDMS.GroundTerminal
             DateTime to = dtpInvalidTo.Value;
 
             IList<InvalidPacket> packets =
-                _telemetryService.SearchInvalidPackets(tailNumber, from, to);
+                 _databaseService.SearchInvalidPackets(tailNumber, from, to);
+
 
             dgvInvalidResults.DataSource = packets;
         }
