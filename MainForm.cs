@@ -750,7 +750,7 @@ namespace FDMS.GroundTerminal
             UpdateDatabaseStatus();
             UpdateRealTimeLabel();
 
-            TestDatabaseConnection();
+            //TestDatabaseConnection();
         
         }
 
@@ -771,7 +771,7 @@ namespace FDMS.GroundTerminal
         }
         private void UpdateDatabaseStatus()
         {
-            var status = _telemetryService.GetDatabaseStatus();
+            var status = _databaseService.TestConnection();
 
             lblDbStatusValue.Text = status.IsConnected ? "Connected" : "Disconnected";
             lblDbStatusValue.ForeColor = status.IsConnected ? Color.DarkGreen : Color.DarkRed;
@@ -836,11 +836,10 @@ namespace FDMS.GroundTerminal
             DateTime to = dtpHistoryTo.Value;
 
             IList<TelemetryRecord> records =
-                _telemetryService.SearchTelemetry(tailNumber, from, to);
+                _databaseService.SearchTelemetry(tailNumber, from, to);
 
             dgvHistoryResults.DataSource = records;
         }
-
         private void btnInvalidSearch_Click(object sender, EventArgs e)
         {
             string tailNumber = txtInvalidTail.Text.Trim();
@@ -855,7 +854,7 @@ namespace FDMS.GroundTerminal
             DateTime to = dtpInvalidTo.Value;
 
             IList<InvalidPacket> packets =
-                _telemetryService.SearchInvalidPackets(tailNumber, from, to);
+                _databaseService.SearchInvalidPackets(tailNumber, from, to);
 
             dgvInvalidResults.DataSource = packets;
         }
