@@ -1,4 +1,12 @@
-﻿
+﻿/*
+ File          : RealTelemetryService.cs
+ Project       : SENG3020 - Term Project
+ Programmer    : Bhawanjeet Kaur Gill
+ File Version  : 11/24/2025
+ Description   : Implements a real-time telemetry service that listens for ATS packets over TCP, 
+                 parses incoming data, validates packet structure and content, and stores valid telemetry 
+                 records or invalid packets in the database. 
+*/
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -21,8 +29,12 @@ namespace FDMS.GroundTerminal.Services
 
         //databse
         private readonly IDatabaseService _databaseService;
-
-        // Configure the port to match ATS (default 8080)
+        /*
+          Function: RealTelemetryService()
+          Description: Configure the port to match ATS (default 8080).
+          Parameters: IDatabaseService databaseService, int port = 8080
+          Return Values:  
+        */
         public RealTelemetryService(IDatabaseService databaseService, int port = 8080)
         {
             _databaseService = databaseService;
@@ -30,10 +42,16 @@ namespace FDMS.GroundTerminal.Services
             _listener.Start();
             _running = true;
             Console.WriteLine("RealTelemetryService: Listening for ATS packets on port " + port);
-            // Fire and forget accept loop (no async lambdas required)
+            
             Task.Run(new Func<Task>(AcceptLoopAsync));
         }
 
+        /*
+          Function: AcceptLoopAsync()
+          Description: Continuously listens for incoming TCP client connections and starts a handler task for each client.
+          Parameters: None
+          Return Values: Task representing the asynchronous accept loop.
+        */
         private async Task AcceptLoopAsync()
         {
             while (_running)
@@ -58,6 +76,13 @@ namespace FDMS.GroundTerminal.Services
             }
         }
 
+        /*
+          Function: HandleClientAsync()
+          Description: Handles communication with a connected TCP client by reading data from the stream, 
+                       splitting packets by newline, and passing each packet to ProcessPacket().
+          Parameters: TcpClient client.
+          Return Values: Task representing the asynchronous client handling operation.
+        */
         private async Task HandleClientAsync(TcpClient client)
         {
             Console.WriteLine("Client connected from " + client.Client.RemoteEndPoint);
@@ -103,11 +128,19 @@ namespace FDMS.GroundTerminal.Services
                 Console.WriteLine("Client disconnected.");
             }
         }
+
+        /*
+          Function: ProcessPacket()
+          Description: Parses and validates a telemetry packet. Stores valid telemetry data or logs invalid packets 
+                       with reasons into the database.
+          Parameters: string packet.
+          Return Values: None
+        */
         private void ProcessPacket(string packet)
         {
             try
             {
-                // Expected format: TailNumber|SeqNum|Timestamp,AccelX,AccelY,AccelZ,Weight,Alt,Pitch,Bank|Checksum
+                // Expecting the format: TailNumber|SeqNum|Timestamp,AccelX,AccelY,AccelZ,Weight,Alt,Pitch,Bank|Checksum
                 var parts = packet.Split('|');
                 if (parts.Length != 4)
                 {
@@ -255,13 +288,26 @@ namespace FDMS.GroundTerminal.Services
                 _invalidPackets.Add(invalidPacket);
                 _databaseService.StoreInvalidPacket(invalidPacket);
             }
-    }
-        // IDatabaseService implementation methods:
+        }
+
+        /*
+          Function: GetTailNumbers()
+          Description: Retrieves a list of all unique tail numbers currently stored in memory.
+          Parameters: None
+          Return Values: IList<string>.
+        */
+
         public IList<string> GetTailNumbers()
         {
             return new List<string>(_tailNumbers);
         }
 
+        /*
+          Function: GetLatestTelemetry()
+          Description: Returns the most recent telemetry record for the specified tail number.
+          Parameters: string tailNumber.
+          Return Values: TelemetryRecord.
+        */
         public TelemetryRecord GetLatestTelemetry(string tailNumber)
         {
             for (int i = _telemetryData.Count - 1; i >= 0; i--)
@@ -271,33 +317,74 @@ namespace FDMS.GroundTerminal.Services
             }
             return null;
         }
+
+        /*
+          Function: SearchTelemetry()
+          Description: Searches telemetry records for the specified tail number within the given date range.
+          Parameters: string tailNumber.
+                      DateTime from.
+                      DateTime to.
+          Return Values: IList<TelemetryRecord>.
+        */
+
         public IList<TelemetryRecord> SearchTelemetry(string tailNumber, DateTime from, DateTime to)
         {
             // Search from DATABASE, not in-memory
             return _databaseService.SearchTelemetry(tailNumber, from, to);
         }
 
+        /*
+          Function: SearchInvalidPackets()
+          Description: Searches invalid packet records for the specified tail number within the given date range.
+          Parameters: string tailNumber.
+                      DateTime from.
+                      DateTime to.
+          Return Values: IList<InvalidPacket> - A list of invalid packets matching the criteria.
+        */
         public IList<InvalidPacket> SearchInvalidPackets(string tailNumber, DateTime from, DateTime to)
         {
-            // Search from DATABASE, not in-memory
             return _databaseService.SearchInvalidPackets(tailNumber, from, to);
         }
 
+        /*
+          Function: TestConnection()
+          Description: Tests the connection to the database service.
+          Parameters: None
+          Return Values: DatabaseStatus
+        */
         public DatabaseStatus TestConnection()
         {
             return _databaseService.TestConnection();
         }
 
+        /*
+          Function: StoreTelemetry()
+          Description: Stores a valid telemetry record in the database.
+          Parameters: TelemetryRecord record
+          Return Values: bool
+        */
         public bool StoreTelemetry(TelemetryRecord record)
         {
             return _databaseService.StoreTelemetry(record);
         }
 
+        /*
+          Function: StoreInvalidPacket()
+          Description: Stores an invalid packet record in the database.
+          Parameters: InvalidPacket packet.
+          Return Values: bool
+        */
         public bool StoreInvalidPacket(InvalidPacket packet)
         {
             return _databaseService.StoreInvalidPacket(packet);
         }
 
+        /*
+          Function: Stop()
+          Description: Stops the telemetry service by halting the TCP listener and ending the accept loop.
+          Parameters: None
+          Return Values: None
+        */
         public void Stop()
         {
             _running = false;

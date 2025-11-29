@@ -2,7 +2,7 @@
 File         : TelemetryRecord.cs
 Project      : SENG3020 - Term Project
 Programmer   : Valentyn Novosydliuk
-File Version : 11/28/2025
+File Version : 11/22/2025
 Description  : Defines a telemetry record model containing sensor values flight
                attitude parameters and sequence information for a specific tail.
 */

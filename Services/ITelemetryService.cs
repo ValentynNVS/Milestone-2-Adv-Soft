@@ -2,7 +2,7 @@
 File         : ITelemetryService.cs
 Project      : SENG3020 - Term Project
 Programmer   : Valentyn Novosydliuk
-File Version : 11/28/2025
+File Version : 11/22/2025
 Description  : Defines the service interface for retrieving telemetry data invalid
                packets and database status for the Ground Terminal application.
 */

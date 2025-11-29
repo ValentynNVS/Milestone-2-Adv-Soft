@@ -2,7 +2,7 @@
 File         : DatabaseStatus.cs
 Project      : SENG3020 - Term Project
 Programmer   : Valentyn Novosydliuk
-File Version : 11/28/2025
+File Version : 11/22/2025
 Description  : Defines a model used to represent the database connection status
                including connectivity flag server name database name and a status message.
 */

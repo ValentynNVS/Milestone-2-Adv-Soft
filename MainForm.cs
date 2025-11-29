@@ -2,7 +2,7 @@
  File          : MainForm.cs
  Project       : SENG3020 - Term Project
  Programmer    : Valentyn Novosydliuk
- File Version  : 11/28/2025
+ File Version  : 11/22/2025
  Description   : Defines the main Windows Form for the FDMS Ground Terminal including
                  dashboard, history, invalid packet and settings views.
 */
@@ -92,7 +92,7 @@ namespace FDMS.GroundTerminal
             _databaseService = new SqlServerDatabaseService(connectionString);
             _telemetryService = new RealTelemetryService(_databaseService, 8080);
 
-            // Confirm both are running
+            // To confirm both are running
             var dbStatus = _databaseService.TestConnection();
             string message = dbStatus.IsConnected
                 ? $"FDMS Ground Terminal Ready\n\n" +

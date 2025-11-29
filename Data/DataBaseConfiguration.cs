@@ -2,7 +2,7 @@
 File         : DataBaseConfiguration.cs
 Project      : SENG3020 - Term Project
 Programmer   : Ygnacio Maza Sanchez
-File Version : 11/28/2025
+File Version : 11/24/2025
 Description  : Provides helper to retrieve the FDMS connection string from App.config or build a default one.
 */
 
