@@ -29,5 +29,9 @@ namespace FDMS.GroundTerminal.Services
         IList<InvalidPacket> SearchInvalidPackets(string tailNumber, DateTime from, DateTime to);
 
         TelemetryRecord GetLatestTelemetry(string tailNumber);
+
+        //void SaveTelemetry(TelemetryRecord record);
+        //void SaveInvalidPacket(InvalidPacket packet);
     }
+
 }

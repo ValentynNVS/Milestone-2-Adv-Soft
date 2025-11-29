@@ -32,5 +32,6 @@ namespace FDMS.GroundTerminal.Models
 
         public int SequenceNumber { get; set; }
         public bool IsFromRealTime { get; set; }
+        public int Checksum { get; set; }
     }
 }

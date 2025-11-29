@@ -32,6 +32,7 @@ namespace FDMS.GroundTerminal
 
         // Services
         private readonly IDatabaseService _databaseService;
+        private readonly RealTelemetryService _telemetryService;
         private bool _isRealTimeEnabled;
 
         // Common
@@ -88,7 +89,25 @@ namespace FDMS.GroundTerminal
         public MainForm()
         {
             string connectionString = Data.DataBaseConfiguration.GetConnectionString();
-            _databaseService = new SqlServerDatabaseService(connectionString); // REAL DB
+            _databaseService = new SqlServerDatabaseService(connectionString);
+            _telemetryService = new RealTelemetryService(_databaseService, 8080);
+
+            // Confirm both are running
+            var dbStatus = _databaseService.TestConnection();
+            string message = dbStatus.IsConnected
+                ? $"FDMS Ground Terminal Ready\n\n" +
+                  $"✓ Database: {dbStatus.DatabaseName} on {dbStatus.ServerName}\n" +
+                  $"✓ TCP Listener: Port 8080\n\n" +
+                  $"Waiting for aircraft connections..."
+                : $"WARNING: Database connection failed!\n\n" +
+                  $"Server: {dbStatus.ServerName}\n" +
+                  $"Error: {dbStatus.StatusMessage}\n\n" +
+                  $"TCP Listener is active on port 8080,\n" +
+                  $"but data will NOT be persisted to database.";
+
+            MessageBox.Show(message, "System Status",
+                MessageBoxButtons.OK,
+                dbStatus.IsConnected ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
 
             BuildLayout();
             InitializeGui();
